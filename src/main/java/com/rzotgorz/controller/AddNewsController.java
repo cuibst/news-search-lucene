@@ -52,6 +52,7 @@ public class AddNewsController {
             QueryParser parser = new QueryParser("id",analyzer);
             Query query = parser.parse(newsModel.getId());
             TopDocs topDocs = searcher.search(query,1);
+            dir.close();
             for(ScoreDoc scoreDoc: topDocs.scoreDocs) {
                 Document doc = searcher.doc(scoreDoc.doc);
                 if(doc.get("id").equals(newsModel.getId()))
@@ -63,6 +64,7 @@ public class AddNewsController {
             return;
         }
         try {
+            dir = LuceneConfig.directory();
             IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
             IndexWriter writer = new IndexWriter(dir, config);
             Document document = new Document();
@@ -74,6 +76,7 @@ public class AddNewsController {
             document.add(new Field("tags", newsModel.getTags(), fieldType));
             writer.addDocument(document);
             writer.close();
+            dir.close();
         } catch (Exception e) {
             e.printStackTrace();
             printWriter.println("{code:500,data:\"Unknown error occurred\"}");
