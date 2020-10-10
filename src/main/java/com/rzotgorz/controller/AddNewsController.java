@@ -45,24 +45,6 @@ public class AddNewsController {
         }
         Directory dir = null;
         try {
-            dir = LuceneConfig.directory();
-            IndexReader reader = DirectoryReader.open(dir);
-            IndexSearcher searcher = new IndexSearcher(reader);
-            Analyzer analyzer = LuceneConfig.analyzer();
-            QueryParser parser = new QueryParser("id",analyzer);
-            Query query = parser.parse(newsModel.getId());
-            TopDocs topDocs = searcher.search(query,1);
-            for(ScoreDoc scoreDoc: topDocs.scoreDocs) {
-                Document doc = searcher.doc(scoreDoc.doc);
-                if(doc.get("id").equals(newsModel.getId()))
-                    throw new Exception("News Already Exists");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            printWriter.println("{code:401,data:\"News Already Exists\"}");
-            return;
-        }
-        try {
             IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
             IndexWriter writer = new IndexWriter(dir, config);
             Document document = new Document();
