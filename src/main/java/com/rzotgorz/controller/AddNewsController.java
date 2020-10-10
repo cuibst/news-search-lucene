@@ -8,10 +8,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -44,8 +41,37 @@ public class AddNewsController {
             return;
         }
         Directory dir = null;
+        boolean flag = false;
+        if(LuceneConfig.directoryExist()) {
+            try {
+                dir = LuceneConfig.directory();
+                IndexReader reader = DirectoryReader.open(dir);
+                IndexSearcher searcher = new IndexSearcher(reader);
+                Analyzer analyzer = LuceneConfig.analyzer();
+                QueryParser parser = new QueryParser("id", analyzer);
+                Query query = parser.parse(newsModel.getId());
+                TopDocs topDocs = searcher.search(query, 1);
+                dir.close();
+                for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+                    Document doc = searcher.doc(scoreDoc.doc);
+                    if (doc.get("id").equals(newsModel.getId()))
+                        throw new Exception("News Already Exists " + doc.get("id"));
+                }
+            } catch (IndexNotFoundException e) {
+                flag = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
+                return;
+            }
+        }
+        else
+            flag = true;
         try {
+            dir = LuceneConfig.directory();
             IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
+            if(flag)
+                config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(dir, config);
             Document document = new Document();
             FieldType fieldType = LuceneConfig.fieldType();
@@ -56,6 +82,7 @@ public class AddNewsController {
             document.add(new Field("tags", newsModel.getTags(), fieldType));
             writer.addDocument(document);
             writer.close();
+            dir.close();
         } catch (Exception e) {
             e.printStackTrace();
             printWriter.println("{code:500,data:\"Unknown error occurred\"}");
