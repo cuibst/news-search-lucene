@@ -8,10 +8,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -60,6 +57,8 @@ public class AddNewsController {
                     if (doc.get("id").equals(newsModel.getId()))
                         throw new Exception("News Already Exists " + doc.get("id"));
                 }
+            } catch (IndexNotFoundException e) {
+                flag = true;
             } catch (Exception e) {
                 e.printStackTrace();
                 printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
