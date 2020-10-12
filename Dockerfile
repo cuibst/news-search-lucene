@@ -1,4 +1,4 @@
-FROM maven:3.6.3-openjdk-15
+FROM maven:3-jdk-8-slim
 
 ENV HOME=/opt/news-search-lucene
 WORKDIR $HOME
