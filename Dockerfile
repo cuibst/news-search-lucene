@@ -7,7 +7,7 @@ WORKDIR $HOME
 COPY . $HOME
 RUN mvn -q -s settings.xml dependency:resolve
 
-RUN mvn -q -s settings.xml clean package -DskipTests
+RUN mvn -q -s settings.xml package -DskipTests
 
 EXPOSE 80
 

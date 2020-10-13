@@ -122,6 +122,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <reportsDirectory>${project.basedir}/target/unittest</reportsDirectory>
+          <argLine>${argLine}</argLine>
         </configuration>
       </plugin>
       <plugin>
