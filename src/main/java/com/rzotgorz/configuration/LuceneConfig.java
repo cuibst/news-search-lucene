@@ -24,11 +24,8 @@ public class LuceneConfig {
 
     @Bean
     public static Directory directory() throws IOException {
-        System.out.println("called");
         Path path = Paths.get(LUCENE_INDEX_PATH);
-        System.out.println(path.toAbsolutePath().toString());
         File file = path.toFile();
-        System.out.println(file.exists());
         if(!file.exists())
             file.mkdirs();
         return FSDirectory.open(path);
@@ -37,9 +34,7 @@ public class LuceneConfig {
     @Bean
     public static boolean directoryExist() throws IOException {
         Path path = Paths.get(LUCENE_INDEX_PATH);
-        System.out.println(path.toAbsolutePath().toString());
         File file = path.toFile();
-        System.out.println(file.exists());
         if(!file.exists())
             return false;
         return true;

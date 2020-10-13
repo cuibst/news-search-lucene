@@ -24,7 +24,7 @@ unit-test:
   before_script:
     - mvn -q -s settings.xml dependency:resolve
   script:
-    - mvn -q -s settings.xml test
+    - mvn -s settings.xml test
   after_script:
     - SUFFIX=$RANDOM
     - curl -s "http://10.0.0.11/sonar-scanner.tar.gz" -o "/tmp/sonar-$SUFFIX.tar.gz"
