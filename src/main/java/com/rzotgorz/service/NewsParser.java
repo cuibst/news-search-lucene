@@ -20,7 +20,6 @@ public class NewsParser {
                 continue;
             textContent = textContent + line.substring(5);
         }
-        //System.out.println(textContent);
         ret.setTextContents(textContent);
         return ret;
     }

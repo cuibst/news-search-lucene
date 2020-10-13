@@ -34,7 +34,6 @@ public class AddNewsController {
         try {
             newsModel = NewsParser.parse(jsonParam);
         } catch (Exception e) {
-            e.printStackTrace();
             printWriter.println("{code:401,data:\"Invalid News\"}");
             return;
         }
@@ -53,7 +52,6 @@ public class AddNewsController {
             } catch (IndexNotFoundException e) {
                 flag = true;
             } catch (Exception e) {
-                e.printStackTrace();
                 printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
                 return;
             }
@@ -77,7 +75,6 @@ public class AddNewsController {
             writer.close();
             dir.close();
         } catch (Exception e) {
-            e.printStackTrace();
             printWriter.println("{code:500,data:\"Unknown error occurred\"}");
             return;
         }
