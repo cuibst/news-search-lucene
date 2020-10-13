@@ -1,8 +1,9 @@
-package com.rzotgorz.service;
+package com.rzotgorz;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.rzotgorz.model.NewsModel;
+import com.rzotgorz.service.NewsParser;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
