@@ -8,12 +8,10 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,7 +34,6 @@ public class AddNewsController {
         try {
             newsModel = NewsParser.parse(jsonParam);
         } catch (Exception e) {
-            e.printStackTrace();
             printWriter.println("{code:401,data:\"Invalid News\"}");
             return;
         }
@@ -47,20 +44,14 @@ public class AddNewsController {
                 dir = LuceneConfig.directory();
                 IndexReader reader = DirectoryReader.open(dir);
                 IndexSearcher searcher = new IndexSearcher(reader);
-                Analyzer analyzer = LuceneConfig.analyzer();
-                QueryParser parser = new QueryParser("id", analyzer);
-                Query query = parser.parse(newsModel.getId());
-                TopDocs topDocs = searcher.search(query, 1);
+                Query query = new TermQuery(new Term("id",jsonParam.getString("news_id")));
+                TopDocs topDocs = searcher.search(query, 10);
                 dir.close();
-                for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-                    Document doc = searcher.doc(scoreDoc.doc);
-                    if (doc.get("id").equals(newsModel.getId()))
-                        throw new Exception("News Already Exists " + doc.get("id"));
-                }
+                if(topDocs.scoreDocs.length != 0)
+                    throw new Exception("News Already Exists " + jsonParam.getString("news_id"));
             } catch (IndexNotFoundException e) {
                 flag = true;
             } catch (Exception e) {
-                e.printStackTrace();
                 printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
                 return;
             }
@@ -77,14 +68,13 @@ public class AddNewsController {
             FieldType fieldType = LuceneConfig.fieldType();
             document.add(new Field("title", newsModel.getTitle(), fieldType));
             document.add(new Field("content", newsModel.getTextContents(), fieldType));
-            document.add(new Field("id", newsModel.getId(), fieldType));
+            document.add(new StringField("id",newsModel.getId(), Field.Store.YES));
             document.add(new Field("origin_json", newsModel.getOriginJson(), fieldType));
             document.add(new Field("tags", newsModel.getTags(), fieldType));
             writer.addDocument(document);
             writer.close();
             dir.close();
         } catch (Exception e) {
-            e.printStackTrace();
             printWriter.println("{code:500,data:\"Unknown error occurred\"}");
             return;
         }

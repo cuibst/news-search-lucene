@@ -27,7 +27,7 @@ import java.util.ArrayList;
 @EnableAutoConfiguration
 public class NewsSearchController {
     @RequestMapping(value = "/index/search", method = RequestMethod.GET)
-    public void SearchNews(@RequestParam String query, HttpServletResponse response) throws IOException
+    public void SearchNews(@RequestParam String query, HttpServletResponse response) throws Exception
     {
         System.out.println(query);
         response.setCharacterEncoding("gbk");
@@ -48,36 +48,31 @@ public class NewsSearchController {
         }
         writer.println("]}");
     }
-    public static ArrayList<NewsModel> getTopDoc(String key,int N) {
+    public static ArrayList<NewsModel> getTopDoc(String key,int N) throws Exception{
         ArrayList<NewsModel> hitsList = new ArrayList<>();
         String[] fields = {"title","tags","content"};
         Directory dir;
-        try
-        {
-            dir = LuceneConfig.directory();
-            IndexReader reader = DirectoryReader.open(dir);
-            IndexSearcher searcher = new IndexSearcher(reader);
-            Analyzer analyzer = LuceneConfig.analyzer();
-            MultiFieldQueryParser parser = new MultiFieldQueryParser(fields,analyzer);
+        dir = LuceneConfig.directory();
+        IndexReader reader = DirectoryReader.open(dir);
+        IndexSearcher searcher = new IndexSearcher(reader);
+        Analyzer analyzer = LuceneConfig.analyzer();
+        MultiFieldQueryParser parser = new MultiFieldQueryParser(fields,analyzer);
 
-            Query query = parser.parse(key);
-            TopDocs topDocs = searcher.search(query, N);
+        Query query = parser.parse(key);
+        TopDocs topDocs = searcher.search(query, N);
 
-            for(ScoreDoc scoreDoc: topDocs.scoreDocs) {
-                NewsModel cur = new NewsModel();
-                Document doc = searcher.doc(scoreDoc.doc);
-                cur.setId(doc.get("id"));
-                cur.setTextContents(doc.get("content"));
-                cur.setTags(doc.get("tags"));
-                cur.setTitle(doc.get("title"));
-                cur.setOriginJson(doc.get("origin_json"));
-                hitsList.add(cur);
-            }
-            dir.close();
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        for(ScoreDoc scoreDoc: topDocs.scoreDocs) {
+            NewsModel cur = new NewsModel();
+            Document doc = searcher.doc(scoreDoc.doc);
+            cur.setId(doc.get("id"));
+            cur.setTextContents(doc.get("content"));
+            cur.setTags(doc.get("tags"));
+            cur.setTitle(doc.get("title"));
+            cur.setOriginJson(doc.get("origin_json"));
+            hitsList.add(cur);
         }
+        dir.close();
+        reader.close();
         return hitsList;
     }
 }

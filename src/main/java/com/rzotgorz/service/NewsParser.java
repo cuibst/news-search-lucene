@@ -16,12 +16,10 @@ public class NewsParser {
         List<String> contents = JSON.parseArray(jsonObject.getJSONArray("content").toJSONString(),String.class);
         String textContent = "";
         for(String line : contents) {
-            String tmp = line.substring(0,3);
-            if(tmp.equals("img_"))
+            if(line.indexOf("img_")==0)
                 continue;
             textContent = textContent + line.substring(5);
         }
-        //System.out.println(textContent);
         ret.setTextContents(textContent);
         return ret;
     }
