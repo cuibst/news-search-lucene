@@ -26,6 +26,16 @@ import java.util.ArrayList;
 @Controller
 @EnableAutoConfiguration
 public class NewsSearchController {
+    /*
+     * The controller of searching news.
+     * TODO: Support offset and start parameter.
+     */
+
+    /*
+     * Url: /index/search
+     * Method: GET
+     * Usage: Return the result of the given query.
+     */
     @RequestMapping(value = "/index/search", method = RequestMethod.GET)
     public void SearchNews(@RequestParam String query, HttpServletResponse response) throws Exception
     {
@@ -48,6 +58,10 @@ public class NewsSearchController {
         }
         writer.println("]}");
     }
+
+    /*
+     * Usage: Get the top document lists of a given query.
+     */
     public static ArrayList<NewsModel> getTopDoc(String key,int N) throws Exception{
         ArrayList<NewsModel> hitsList = new ArrayList<>();
         String[] fields = {"title","tags","content"};

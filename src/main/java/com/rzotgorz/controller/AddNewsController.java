@@ -27,13 +27,22 @@ import java.io.PrintWriter;
 @Controller
 @EnableAutoConfiguration
 public class AddNewsController {
+    /*
+     * The controller for add news.
+     */
+
+    /*
+     * Url: /index/add
+     * Method: POST
+     * Usage: Receive the json of the news to be added and add it to the index (if it doesn't exist).
+     */
     @RequestMapping(value = "/index/add", method = RequestMethod.POST)
     public void AddNews(@RequestBody JSONObject jsonParam, HttpServletResponse response) throws IOException {
         PrintWriter printWriter = response.getWriter();
         NewsModel newsModel = null;
         try {
             newsModel = NewsParser.parse(jsonParam);
-        } catch (Exception e) {
+        } catch (Exception e) { //If some of the parameters doesn't exist, the parser will throw a exception of cannot read parameters.
             printWriter.println("{code:401,data:\"Invalid News\"}");
             return;
         }
@@ -44,24 +53,26 @@ public class AddNewsController {
                 dir = LuceneConfig.directory();
                 IndexReader reader = DirectoryReader.open(dir);
                 IndexSearcher searcher = new IndexSearcher(reader);
+                //Use term because the id didn't go through analyzer when added.
                 Query query = new TermQuery(new Term("id",jsonParam.getString("news_id")));
                 TopDocs topDocs = searcher.search(query, 10);
                 dir.close();
                 if(topDocs.scoreDocs.length != 0)
                     throw new Exception("News Already Exists " + jsonParam.getString("news_id"));
-            } catch (IndexNotFoundException e) {
+            } catch (IndexNotFoundException e) { //Although the directory exists, it doesn't have the index. It's empty.
                 flag = true;
-            } catch (Exception e) {
+            } catch (Exception e) {  //Catch the exception of duplicate news.
                 printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
                 return;
             }
         }
         else
             flag = true;
+
         try {
             dir = LuceneConfig.directory();
             IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
-            if(flag)
+            if(flag) //When the index doesn't exist, create it instead of add into it.
                 config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(dir, config);
             Document document = new Document();

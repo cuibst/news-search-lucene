@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Hello world!
- *
+ * The Entry class for the whole website.
+ * TODO: Call some initialize method in the future.
  */
 @SpringBootApplication
 public class Entry

@@ -1,6 +1,10 @@
 package com.rzotgorz.model;
 
 public class NewsModel {
+    /*
+     * Model for the news.
+     * TODO: Determine the final version of the news.
+     */
     private String title;
     private String tags;
     private String textContents;
