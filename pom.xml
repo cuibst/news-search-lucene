@@ -108,6 +108,13 @@
       <systemPath>${project.basedir}/lib/servlet-api.jar</systemPath>
     </dependency>
     <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>jdbc-postgre</artifactId>
+      <version>42.2.18</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/postgresql-42.2.18.jar</systemPath>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
@@ -127,6 +134,8 @@
         <configuration>
           <reportsDirectory>${project.basedir}/target/unittest</reportsDirectory>
           <argLine>${argLine}</argLine>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
         </configuration>
       </plugin>
       <plugin>
