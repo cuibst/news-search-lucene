@@ -3,8 +3,8 @@ package com.rzotgorz.service;
 import java.sql.*;
 
 public class DatabaseConnector {
-    // private static final String url = "jdbc:postgresql://localhost:5432/news";
-    private static final String url = "jdbc:postgresql://postgres.rzotgorz.secoder.local:5432/news";
+    private static final String url = "jdbc:postgresql://localhost:5432/news";
+    // private static final String url = "jdbc:postgresql://postgres.rzotgorz.secoder.local:5432/news";
     private static final String username = "postgres";
     private static final String password = "12345678";
     private Connection connection = null;
@@ -19,15 +19,13 @@ public class DatabaseConnector {
     }
 
     public ResultSet query(String q) {
-        PreparedStatement preparedStatement = null;
+
         if (connection == null) {
             getConnection();
         }
         ResultSet resultSet = null;
-        try {
-            preparedStatement = connection.prepareStatement(q);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(q);) {
             resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
         } catch (SQLException e) {
             return null;
         }
@@ -35,15 +33,12 @@ public class DatabaseConnector {
     }
 
     public boolean modify(String q) {
-        PreparedStatement preparedStatement = null;
         if (connection == null) {
             getConnection();
         }
         int result = 0;
-        try {
-            preparedStatement = connection.prepareStatement(q);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(q);) {
             result = preparedStatement.executeUpdate();
-            preparedStatement.close();
         } catch (SQLException e) {
             return false;
         }

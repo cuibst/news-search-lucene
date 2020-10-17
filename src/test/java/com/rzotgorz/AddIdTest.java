@@ -58,6 +58,9 @@ public class AddIdTest {
 
     @Test
     public void testAddValidId() throws Exception {
+        DatabaseConnector connector = new DatabaseConnector();
+        connector.modify("DELETE FROM backend_news WHERE news_id = 'test1';");
+
         MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post("/index/add/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"news_id\":\"test1\"}");
         MvcResult result = mockMvc.perform(post).andReturn();
         int status = result.getResponse().getStatus();
@@ -66,7 +69,6 @@ public class AddIdTest {
         Assert.assertEquals("Invalid response code.",401,object.getIntValue("code"));
         Assert.assertEquals("Invalid response message","No news found with given id",object.getString("data"));
 
-        DatabaseConnector connector = new DatabaseConnector();
         connector.modify("INSERT INTO backend_news " +
                 "(source, news_url, category, media, tags, title, news_id, pub_date, content, summary, img) " +
                 "VALUES ('source','url','category','media','tag1,tag2','title','test1','2020-10-17','content','summary','image');");

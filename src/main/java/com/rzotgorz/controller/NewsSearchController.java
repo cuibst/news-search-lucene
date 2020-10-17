@@ -39,7 +39,6 @@ public class NewsSearchController {
     @RequestMapping(value = "/index/search", method = RequestMethod.GET)
     public void SearchNews(@RequestParam String query, HttpServletResponse response) throws Exception
     {
-        System.out.println(query);
         response.setCharacterEncoding("gbk");
         PrintWriter writer = response.getWriter();
         if(query == null || query.equals("")) {
@@ -50,7 +49,6 @@ public class NewsSearchController {
         writer.println("{code:200,\ndata:[");
         for(int i=0;i<hitsList.size();i++)
         {
-            //System.out.println(new String(hitsList.get(i).getOriginJson().getBytes("utf-8"),"gbk"));
             writer.print(hitsList.get(i).toJSONString());
             if(i!=hitsList.size()-1)
                 writer.print(',');
