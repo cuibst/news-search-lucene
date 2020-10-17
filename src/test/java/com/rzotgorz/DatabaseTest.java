@@ -18,7 +18,7 @@ public class DatabaseTest {
     }
 
     @Test
-    public void testQuery() {
+    public void testQuery() throws Exception{
         boolean result = connector.modify("INSERT INTO backend_news (news_id) VALUES ('test1');");
         Assert.assertFalse("That should be invalid", result);
         result = connector.modify("INSERT INTO backend_news " +
