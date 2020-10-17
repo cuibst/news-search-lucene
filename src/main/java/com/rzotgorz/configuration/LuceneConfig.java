@@ -16,12 +16,20 @@ import java.nio.file.Paths;
 
 @Configuration
 public class LuceneConfig {
+    /*
+     * Some basic configurations for the whole lucene index server.
+     */
+
+    //The directory of the index
     private static final String LUCENE_INDEX_PATH = "/index";
+
+    //The unified analyzer to split words.
     @Bean
     public static Analyzer analyzer() {
         return new IKAnalyzer();
     }
 
+    //Return the index directory and create directory if needed.
     @Bean
     public static Directory directory() throws IOException {
         Path path = Paths.get(LUCENE_INDEX_PATH);
@@ -31,6 +39,7 @@ public class LuceneConfig {
         return FSDirectory.open(path);
     }
 
+    //Return whether the index directory exists.
     @Bean
     public static boolean directoryExist() throws IOException {
         Path path = Paths.get(LUCENE_INDEX_PATH);
@@ -40,6 +49,7 @@ public class LuceneConfig {
         return true;
     }
 
+    //Return the common field type for the lucene index fields.
     @Bean
     public static FieldType fieldType() throws Exception {
         FieldType fieldType = new FieldType();

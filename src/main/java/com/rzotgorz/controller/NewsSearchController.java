@@ -19,17 +19,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
 @Controller
 @EnableAutoConfiguration
 public class NewsSearchController {
+    /*
+     * The controller of searching news.
+     * TODO: Support offset and start parameter.
+     */
+
+    /*
+     * Url: /index/search
+     * Method: GET
+     * Usage: Return the result of the given query.
+     */
     @RequestMapping(value = "/index/search", method = RequestMethod.GET)
     public void SearchNews(@RequestParam String query, HttpServletResponse response) throws Exception
     {
-        System.out.println(query);
         response.setCharacterEncoding("gbk");
         PrintWriter writer = response.getWriter();
         if(query == null || query.equals("")) {
@@ -40,17 +48,20 @@ public class NewsSearchController {
         writer.println("{code:200,\ndata:[");
         for(int i=0;i<hitsList.size();i++)
         {
-            //System.out.println(new String(hitsList.get(i).getOriginJson().getBytes("utf-8"),"gbk"));
-            writer.print(hitsList.get(i).getOriginJson());
+            writer.print(hitsList.get(i).toJSONString());
             if(i!=hitsList.size()-1)
                 writer.print(',');
             writer.println();
         }
         writer.println("]}");
     }
+
+    /*
+     * Usage: Get the top document lists of a given query.
+     */
     public static ArrayList<NewsModel> getTopDoc(String key,int N) throws Exception{
         ArrayList<NewsModel> hitsList = new ArrayList<>();
-        String[] fields = {"title","tags","content"};
+        String[] fields = {"title","tags","content","category","summary"};
         Directory dir;
         dir = LuceneConfig.directory();
         IndexReader reader = DirectoryReader.open(dir);
@@ -65,10 +76,16 @@ public class NewsSearchController {
             NewsModel cur = new NewsModel();
             Document doc = searcher.doc(scoreDoc.doc);
             cur.setId(doc.get("id"));
-            cur.setTextContents(doc.get("content"));
+            cur.setContents(doc.get("content"));
             cur.setTags(doc.get("tags"));
             cur.setTitle(doc.get("title"));
-            cur.setOriginJson(doc.get("origin_json"));
+            cur.setCategory(doc.get("category"));
+            cur.setSummary(doc.get("summary"));
+            cur.setSource(doc.get("source"));
+            cur.setNews_url(doc.get("news_url"));
+            cur.setMedia(doc.get("media"));
+            cur.setPub_date(doc.get("pub_date"));
+            cur.setImg(doc.get("img"));
             hitsList.add(cur);
         }
         dir.close();
