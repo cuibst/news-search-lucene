@@ -2,10 +2,7 @@ package com.rzotgorz.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.rzotgorz.configuration.LuceneConfig;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.*;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

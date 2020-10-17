@@ -1,10 +1,7 @@
 package com.rzotgorz.service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.rzotgorz.model.NewsModel;
-
-import java.util.List;
 
 public class NewsParser {
     /*

@@ -5,16 +5,13 @@ import com.rzotgorz.configuration.LuceneConfig;
 import com.rzotgorz.model.NewsModel;
 import com.rzotgorz.service.DatabaseConnector;
 import com.rzotgorz.service.NewsParser;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.*;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,11 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.sound.midi.SysexMessage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 @Controller
 @EnableAutoConfiguration
@@ -66,7 +61,6 @@ public class AddNewsController {
                 if(topDocs.scoreDocs.length != 0)
                     throw new Exception("News Already Exists " + jsonParam.getString("news_id"));
             } catch (IndexNotFoundException e) { //Although the directory exists, it doesn't have the index. It's empty.
-                dir.close();
                 flag = true;
             } catch (Exception e) {  //Catch the exception of duplicate news.
                 printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
@@ -129,7 +123,6 @@ public class AddNewsController {
                 if(topDocs.scoreDocs.length != 0)
                     throw new Exception("News Already Exists " + newsId);
             } catch (IndexNotFoundException e) { //Although the directory exists, it doesn't have the index. It's empty.
-                dir.close();
                 flag = true;
             } catch (Exception e) {  //Catch the exception of duplicate news.
                 printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
