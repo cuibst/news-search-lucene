@@ -18,35 +18,25 @@ public class DatabaseConnector {
 
     }
 
-    public ResultSet query(String q) {
+    public ResultSet query(String q) throws SQLException{
         PreparedStatement preparedStatement = null;
         if (connection == null) {
             getConnection();
         }
         ResultSet resultSet = null;
-        try {
-            preparedStatement = connection.prepareStatement(q);
-            resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
-        } catch (SQLException e) {
-            return null;
-        }
+        preparedStatement = connection.prepareStatement(q);
+        resultSet = preparedStatement.executeQuery();
         return resultSet;
     }
 
-    public boolean modify(String q) {
+    public boolean modify(String q) throws SQLException{
         PreparedStatement preparedStatement = null;
         if (connection == null) {
             getConnection();
         }
         int result = 0;
-        try {
-            preparedStatement = connection.prepareStatement(q);
-            result = preparedStatement.executeUpdate();
-            preparedStatement.close();
-        } catch (SQLException e) {
-            return false;
-        }
+        preparedStatement = connection.prepareStatement(q);
+        result = preparedStatement.executeUpdate();
         return result > 0;
     }
 }
