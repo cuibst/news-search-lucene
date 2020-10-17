@@ -163,7 +163,7 @@ public class AddNewsController {
             writer.close();
             dir.close();
         } catch (Exception e) {
-            printWriter.println("{code:500,data:\"Unknown error occurred\"}");
+            printWriter.println("{code:500,data:\"Unknown error occurred"+e.getMessage()+"\"}");
             return;
         }
         printWriter.println("{code:200,data:\"News added successfully\"}");
