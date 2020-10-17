@@ -27,8 +27,9 @@ public class DatabaseConnector {
         try {
             preparedStatement = connection.prepareStatement(q);
             resultSet = preparedStatement.executeQuery();
+            preparedStatement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            return null;
         }
         return resultSet;
     }
@@ -42,8 +43,9 @@ public class DatabaseConnector {
         try {
             preparedStatement = connection.prepareStatement(q);
             result = preparedStatement.executeUpdate();
+            preparedStatement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            return false;
         }
         return result > 0;
     }

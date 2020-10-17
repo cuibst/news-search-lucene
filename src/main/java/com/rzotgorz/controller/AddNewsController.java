@@ -44,7 +44,6 @@ public class AddNewsController {
     @RequestMapping(value = "/index/add_from_json", method = RequestMethod.POST)
     public void addNewsFromJson(@RequestBody JSONObject jsonParam, HttpServletResponse response) throws IOException {
         PrintWriter printWriter = response.getWriter();
-        System.out.println(jsonParam.toString());
         NewsModel newsModel = null;
         try {
             newsModel = NewsParser.parse(jsonParam);
@@ -70,7 +69,6 @@ public class AddNewsController {
                 dir.close();
                 flag = true;
             } catch (Exception e) {  //Catch the exception of duplicate news.
-                dir.close();
                 printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
                 return;
             }
@@ -101,11 +99,9 @@ public class AddNewsController {
             writer.close();
             dir.close();
         } catch (Exception e) {
-            dir.close();
             printWriter.println("{code:500,data:\"Unknown error occurred\"}");
             return;
         }
-        System.out.println("=================\n"+"Add Json:"+newsModel.getId()+'\n'+"=================");
         printWriter.println("{code:200,data:\"News added successfully\"}");
     }
 
@@ -136,14 +132,12 @@ public class AddNewsController {
                 dir.close();
                 flag = true;
             } catch (Exception e) {  //Catch the exception of duplicate news.
-                dir.close();
                 printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
                 return;
             }
         }
         else
             flag = true;
-        System.out.println("No news in index, continue to check database!");
         try {
             dir = LuceneConfig.directory();
             IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
@@ -176,12 +170,9 @@ public class AddNewsController {
             writer.close();
             dir.close();
         } catch (Exception e) {
-            dir.close();
-            e.printStackTrace();
             printWriter.println("{code:500,data:\"Unknown error occurred\"}");
             return;
         }
-        System.out.println("=================\n"+"Add Id:"+newsId+'\n'+"=================");
         printWriter.println("{code:200,data:\"News added successfully\"}");
     }
 }
