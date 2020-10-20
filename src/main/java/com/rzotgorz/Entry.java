@@ -24,14 +24,14 @@ public class Entry
     public static void initializeIndex() throws SQLException, IOException {
         System.out.println("Index Initializing...");
         DatabaseConnector connector = new DatabaseConnector();
-        int cnt = 100;
+        int cnt = 1000;
         Directory dir = LuceneConfig.directory();
         IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         IndexWriter writer = new IndexWriter(dir, config);
         while(true)
         {
-            String q = "SELECT * FROM backend_news WHERE id BETWEEN "+(cnt-100)+" AND "+(cnt-1)+';';
+            String q = "SELECT * FROM backend_news WHERE id BETWEEN "+(cnt-1000)+" AND "+(cnt-1)+';';
             ResultSet resultSet = connector.query(q);
             if(!resultSet.next())
                 break;
@@ -55,10 +55,10 @@ public class Entry
                     return;
                 }
             } while(resultSet.next());
-            if(cnt % 20000 == 0) {
+            if(cnt % 50000 == 0) {
                 System.err.println(cnt);
             }
-            cnt += 100;
+            cnt += 1000;
         }
         writer.close();
         dir.close();
