@@ -84,7 +84,7 @@ public class Entry
 
     public static void main(String[] args) {
         try {
-            initializeIndex();
+            //initializeIndex();
         } catch (Exception e) {
             e.printStackTrace();
         }
