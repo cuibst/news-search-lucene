@@ -7,10 +7,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.*;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,39 +24,19 @@ public class Entry
     public static void initializeIndex() throws SQLException, IOException {
         System.out.println("Index Initializing...");
         DatabaseConnector connector = new DatabaseConnector();
-        int cnt = 20;
+        int cnt = 100;
+        Directory dir = LuceneConfig.directory();
+        IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        IndexWriter writer = new IndexWriter(dir, config);
         while(true)
         {
-            String q = "SELECT * FROM backend_news WHERE id BETWEEN "+(cnt-20)+" AND "+cnt+';';
+            String q = "SELECT * FROM backend_news WHERE id BETWEEN "+(cnt-100)+" AND "+(cnt-1)+';';
             ResultSet resultSet = connector.query(q);
             if(!resultSet.next())
                 break;
             do {
-                Directory dir = null;
-                boolean flag = false;
-                if (LuceneConfig.directoryExist()) {
-                    try {
-                        dir = LuceneConfig.directory();
-                        IndexReader reader = DirectoryReader.open(dir);
-                        IndexSearcher searcher = new IndexSearcher(reader);
-                        //Use term because the id didn't go through analyzer when added.
-                        Query query = new TermQuery(new Term("id", resultSet.getString("news_id")));
-                        TopDocs topDocs = searcher.search(query, 10);
-                        reader.close();
-                        dir.close();
-                        if (topDocs.scoreDocs.length != 0)
-                            continue;
-                    } catch (IndexNotFoundException e) {
-                        flag = true;
-                    }
-                } else
-                    flag = true;
                 try {
-                    dir = LuceneConfig.directory();
-                    IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
-                    if (flag) //When the index doesn't exist, create it instead of add into it.
-                        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-                    IndexWriter writer = new IndexWriter(dir, config);
                     Document document = new Document();
                     FieldType fieldType = LuceneConfig.fieldType();
                     document.add(new Field("title", resultSet.getString("title"), fieldType));
@@ -81,11 +57,10 @@ public class Entry
                     return;
                 }
             } while(resultSet.next());
-            cnt += 20;
-            if(cnt == 1000) {
+            if(cnt % 1000 == 0) {
                 System.err.println(cnt);
-                break;
             }
+            cnt += 100;
         }
     }
 
