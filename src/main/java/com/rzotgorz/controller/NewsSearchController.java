@@ -38,14 +38,15 @@ public class NewsSearchController {
     @RequestMapping(value = "/index/search", method = RequestMethod.GET)
     public void SearchNews(@RequestParam String query, HttpServletResponse response) throws Exception
     {
-        response.setCharacterEncoding("gbk");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
         PrintWriter writer = response.getWriter();
         if(query == null || query.equals("")) {
             writer.println("{code:401,data:\"invalid query\"}");
             return;
         }
         ArrayList<NewsModel> hitsList = getTopDoc(query,10);
-        writer.println("{code:200,\ndata:[");
+        writer.println("{code:200,\ninfolist:[");
         for(int i=0;i<hitsList.size();i++)
         {
             writer.print(hitsList.get(i).toJSONString());

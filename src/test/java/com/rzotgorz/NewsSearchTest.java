@@ -77,7 +77,7 @@ public class NewsSearchTest extends TestCase {
         JSONObject object = JSONObject.parseObject(result.getResponse().getContentAsString());
         Assert.assertEquals("Invalid response code.",200,object.getIntValue("code"));
         try {
-            List<JSONObject> contents = JSON.parseArray(object.getJSONArray("data").toJSONString(),JSONObject.class);
+            List<JSONObject> contents = JSON.parseArray(object.getJSONArray("infolist").toJSONString(),JSONObject.class);
             Assert.assertTrue("Search results is not enough",contents.size()>=2);
         } catch (Exception e) {
             fail("Invalid search results");
