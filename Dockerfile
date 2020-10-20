@@ -1,4 +1,4 @@
-FROM maven:3.6.3-openjdk-15
+FROM maven:3-jdk-8-slim
 
 ENV HOME=/opt/news-search-lucene
 WORKDIR $HOME
@@ -7,7 +7,7 @@ WORKDIR $HOME
 COPY . $HOME
 RUN mvn -q -s settings.xml dependency:resolve
 
-RUN mvn -q -s settings.xml clean package -DskipTests
+RUN mvn -q -s settings.xml package -DskipTests
 
 EXPOSE 80
 
