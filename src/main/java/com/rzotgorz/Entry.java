@@ -29,6 +29,7 @@ public class Entry
         System.out.println("Index Initializing...");
         DatabaseConnector connector = new DatabaseConnector();
         ResultSet resultSet = connector.query("SELECT * FROM backend_news;");
+        int cnt = 0;
         while(resultSet.next()) {
             Directory dir = null;
             boolean flag = false;
@@ -75,6 +76,9 @@ public class Entry
             } catch (Exception e) {
                 return;
             }
+            cnt += 1;
+            if(cnt >= 1000)
+                break;
         }
     }
 
