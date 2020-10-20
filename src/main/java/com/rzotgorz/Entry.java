@@ -82,6 +82,8 @@ public class Entry
                 }
             } while(resultSet.next());
             cnt += 20;
+            if(cnt%1000==0)
+                System.err.println(cnt);
         }
     }
 
