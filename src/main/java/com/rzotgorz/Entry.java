@@ -55,7 +55,7 @@ public class Entry
                     return;
                 }
             } while(resultSet.next());
-            if(cnt % 1000 == 0) {
+            if(cnt % 20000 == 0) {
                 System.err.println(cnt);
             }
             cnt += 100;
