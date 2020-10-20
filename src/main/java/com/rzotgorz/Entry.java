@@ -77,7 +77,7 @@ public class Entry
                 return;
             }
             cnt += 1;
-            if(cnt >= 1000)
+            if(cnt >= 100)
                 break;
         }
     }
