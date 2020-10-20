@@ -51,8 +51,6 @@ public class Entry
                     document.add(new StringField("pub_date", resultSet.getString("pub_date"), Field.Store.YES));
                     document.add(new StringField("img", resultSet.getString("img"), Field.Store.YES));
                     writer.addDocument(document);
-                    writer.close();
-                    dir.close();
                 } catch (Exception e) {
                     return;
                 }
@@ -62,6 +60,8 @@ public class Entry
             }
             cnt += 100;
         }
+        writer.close();
+        dir.close();
     }
 
     public static void main(String[] args) {
