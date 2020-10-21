@@ -44,7 +44,7 @@ public class NewsSearchTest extends TestCase {
         Assert.assertEquals("Invalid status code.",200,status);
         JSONObject object = JSONObject.parseObject(result.getResponse().getContentAsString());
         Assert.assertEquals("Invalid response code.",401,object.getIntValue("code"));
-        Assert.assertEquals("Invalid response message","invalid query",object.getString("data"));
+        Assert.assertEquals("Invalid response message","invalid query",object.getString("infolist"));
     }
 
     @Test

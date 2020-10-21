@@ -145,7 +145,7 @@ public class AddNewsController {
             {
                 writer.close();
                 dir.close();
-                printWriter.println("{code:401,data:\"No news found with given id\"}");
+                printWriter.println("{\"code\":401,\"data\":\"No news found with given id\"}");
                 return;
             }
             document.add(new Field("title", resultSet.getString("title"), fieldType));
@@ -163,9 +163,9 @@ public class AddNewsController {
             writer.close();
             dir.close();
         } catch (Exception e) {
-            printWriter.println("{code:500,data:\"Unknown error occurred"+e.getMessage()+"\"}");
+            printWriter.println("{\"code\":500,\"data\":\"Unknown error occurred"+e.getMessage()+"\"}");
             return;
         }
-        printWriter.println("{code:200,data:\"News added successfully\"}");
+        printWriter.println("{\"code\":200,\"data\":\"News added successfully\"}");
     }
 }

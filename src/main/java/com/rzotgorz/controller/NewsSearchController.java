@@ -42,11 +42,11 @@ public class NewsSearchController {
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter writer = response.getWriter();
         if(query == null || query.equals("")) {
-            writer.println("{code:401,data:\"invalid query\"}");
+            writer.println("{\"code\":401,\"infolist\":\"invalid query\"}");
             return;
         }
         ArrayList<NewsModel> hitsList = getTopDoc(query,10);
-        writer.println("{code:200,\ninfolist:[");
+        writer.println("{\"code\":200,\n\"infolist\":[");
         for(int i=0;i<hitsList.size();i++)
         {
             writer.print(hitsList.get(i).toJSONString());
