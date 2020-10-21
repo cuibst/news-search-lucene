@@ -43,7 +43,7 @@ public class AddNewsController {
         try {
             newsModel = NewsParser.parse(jsonParam);
         } catch (Exception e) { //If some of the parameters doesn't exist, the parser will throw a exception of cannot read parameters.
-            printWriter.println("{code:401,data:\"Invalid News\"}");
+            printWriter.println("{\"code\":401,\"data\":\"Invalid News\"}");
             return;
         }
         Directory dir = null;
@@ -63,7 +63,7 @@ public class AddNewsController {
             } catch (IndexNotFoundException e) { //Although the directory exists, it doesn't have the index. It's empty.
                 flag = true;
             } catch (Exception e) {  //Catch the exception of duplicate news.
-                printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
+                printWriter.println("{\"code\":401,\"data\":\"" + e.getMessage() + "\"}");
                 return;
             }
         }
@@ -93,10 +93,10 @@ public class AddNewsController {
             writer.close();
             dir.close();
         } catch (Exception e) {
-            printWriter.println("{code:500,data:\"Unknown error occurred\"}");
+            printWriter.println("{\"code\":500,\"data\":\"Unknown error occurred\"}");
             return;
         }
-        printWriter.println("{code:200,data:\"News added successfully\"}");
+        printWriter.println("{\"code\":200,\"data\":\"News added successfully\"}");
     }
 
     @RequestMapping(value = "/index/add", method = RequestMethod.POST)
@@ -105,7 +105,7 @@ public class AddNewsController {
         String newsId = jsonParam.getString("news_id");
         if(newsId == null || newsId.equals(""))
         {
-            printWriter.println("{code:401,data:\"Invalid news id\"}");
+            printWriter.println("{\"code\":401,\"data\":\"Invalid news id\"}");
             return;
         }
         Directory dir = null;
