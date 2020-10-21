@@ -125,7 +125,7 @@ public class AddNewsController {
             } catch (IndexNotFoundException e) { //Although the directory exists, it doesn't have the index. It's empty.
                 flag = true;
             } catch (Exception e) {  //Catch the exception of duplicate news.
-                printWriter.println("{code:401,data:\"" + e.getMessage() + "\"}");
+                printWriter.println("{\"code\":401,\"data\":\"" + e.getMessage() + "\"}");
                 return;
             }
         }
