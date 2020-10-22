@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 @Controller
 @EnableAutoConfiguration
-@CrossOrigin(origins = "news-search-system-rzotgorz.app.secoder.net")
+@CrossOrigin(origins = "https://news-search-system-rzotgorz.app.secoder.net")
 public class NewsSearchController {
     /*
      * The controller of searching news.
