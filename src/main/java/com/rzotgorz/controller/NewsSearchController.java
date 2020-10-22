@@ -14,6 +14,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 
 @Controller
 @EnableAutoConfiguration
+@CrossOrigin(origins = "news-search-system-rzotgorz.app.secoder.net")
 public class NewsSearchController {
     /*
      * The controller of searching news.
