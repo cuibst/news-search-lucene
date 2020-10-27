@@ -12,6 +12,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,9 @@ public class AddNewsController {
     /*
      * The controller for add news.
      */
+
+    @Autowired
+    private DatabaseConnector connector;
 
     /*
      * DEPRECATED
@@ -139,7 +143,6 @@ public class AddNewsController {
             IndexWriter writer = new IndexWriter(dir, config);
             Document document = new Document();
             FieldType fieldType = LuceneConfig.fieldType();
-            DatabaseConnector connector = new DatabaseConnector();
             ResultSet resultSet = connector.query("SELECT * FROM backend_news WHERE news_id = '"+newsId+"'");
             if (!resultSet.next())
             {

@@ -1,2 +1,24 @@
 server:
   port: 80
+
+spring:
+  profiles:
+    active: dev
+
+---
+spring:
+  profiles: dev
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: "jdbc:sqlite::memory:"
+    username: postgres
+    password: 12345678
+
+---
+spring:
+  profiles: prod
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 12345678
+    url: "jdbc:postgresql://postgres.rzotgorz.secoder.local:5432/news"

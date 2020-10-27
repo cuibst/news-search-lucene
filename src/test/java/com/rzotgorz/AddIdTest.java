@@ -32,9 +32,17 @@ public class AddIdTest {
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
+    private DatabaseConnector connector;
+
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        connector.modify("DROP TABLE IF EXISTS backend_news;");
+        connector.modify("CREATE TABLE backend_news" +
+                "(id INTEGER PRIMARY KEY AUTOINCREMENT, source STRING NOT NULL, news_url STRING NOT NULL, category STRING NOT NULL, " +
+                "media STRING NOT NULL, tags STRING NOT NULL, title STRING NOT NULL, news_id STRING NOT NULL UNIQUE, " +
+                "pub_date STRING NOT NULL, content STRING NOT NULL, summary STRING NOT NULL, img STRING NOT NULL)");
     }
 
     @Test
@@ -58,7 +66,6 @@ public class AddIdTest {
 
     @Test
     public void testAddValidId() throws Exception {
-        DatabaseConnector connector = new DatabaseConnector();
         connector.modify("DELETE FROM backend_news WHERE news_id = 'test1';");
 
         MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post("/index/add/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"news_id\":\"test1\"}");
