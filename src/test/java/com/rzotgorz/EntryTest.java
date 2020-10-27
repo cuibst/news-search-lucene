@@ -44,11 +44,27 @@ public class EntryTest {
 
     @Test
     public void testNotEmptyEntry() {
+        connector.modify("INSERT INTO backend_news " +
+                "(source, news_url, category, media, tags, title, news_id, pub_date, content, summary, img) " +
+                "VALUES ('source','url','category','media','tag1,tag2','title','test1','2020-10-17','content','summary','image');");
         try {
             Entry.initializeIndex();
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.fail("Entry is not working properly when empty");
+            Assert.fail("Entry is not working properly when not empty");
+        }
+    }
+
+    @Test
+    public void testMoreEntry() {
+        connector.modify("INSERT INTO backend_news " +
+                "(source, news_url, category, media, tags, title, news_id, pub_date, content, summary, img) " +
+                "VALUES ('source','url','category','media','tag1,tag2','title','test2','2020-10-17','content','summary','image');");
+        try {
+            Entry.initializeIndex();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail("Entry is not working properly when not empty");
         }
     }
 }
