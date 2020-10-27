@@ -19,7 +19,7 @@ public class DatabaseConnector {
         try {
             connection = DriverManager.getConnection(config.url, config.username, config.password);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
@@ -33,7 +33,6 @@ public class DatabaseConnector {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(q);
         } catch (SQLException e) {
-            e.printStackTrace();
             return null;
         }
         return resultSet;
@@ -47,7 +46,6 @@ public class DatabaseConnector {
         try (Statement statement = connection.createStatement();) {
             result = statement.executeUpdate(q);
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
         return result > 0;

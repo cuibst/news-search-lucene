@@ -68,7 +68,7 @@ public class Entry
         try {
             initializeIndex();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         SpringApplication.run(Entry.class, args);
     }
