@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import static java.lang.Integer.max;
 import static java.lang.Integer.min;
 
 @Controller
@@ -59,7 +60,7 @@ public class NewsSearchController {
             c = 20;
         else
             c = Integer.parseInt(count);
-        ArrayList<NewsModel> hitsList = getTopDoc(query,min(s+c,1000));
+        ArrayList<NewsModel> hitsList = getTopDoc(query,max(s+c,1000));
         writer.println("{\"code\":200,\n" +
                 "\"count\":" + hitsList.size() + ",\n" +
                 "\"infolist\":[\n");
