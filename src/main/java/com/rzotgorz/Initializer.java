@@ -1,5 +1,6 @@
 package com.rzotgorz;
 
+import com.rzotgorz.configuration.DatabaseConfig;
 import com.rzotgorz.configuration.LuceneConfig;
 import com.rzotgorz.service.DatabaseConnector;
 import org.apache.lucene.document.Document;
@@ -24,12 +25,20 @@ public class Initializer implements ApplicationRunner {
     @Autowired
     private DatabaseConnector connector;
 
+    @Autowired
+    private DatabaseConfig config;
+
     public void initializeIndex() throws IOException, SQLException {
         System.err.println("Index Initializing...");
         System.err.println("Database Url:"+config.url);
-        ResultSet rs = connector.query("SELECT count(1) FROM backend_news;");
-        System.err.println(rs.getInt(1));
-        rs.close();
+        try {
+            ResultSet rs = connector.query("SELECT count(1) FROM backend_news;");
+            rs.next();
+            System.err.println(rs.getInt(1));
+            rs.close();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
         int cnt = 1000;
         Directory dir = LuceneConfig.directory();
         IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
