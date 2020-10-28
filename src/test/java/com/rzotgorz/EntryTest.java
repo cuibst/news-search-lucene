@@ -21,7 +21,7 @@ public class EntryTest {
     private DatabaseConnector connector;
 
     @Autowired
-    private Entry entry;
+    private Initializer initializer;
 
     @Before
     public void setUp() {
@@ -35,7 +35,7 @@ public class EntryTest {
     @Test
     public void testEmptyEntry() {
         try {
-            Entry.initializeIndex();
+            initializer.initializeIndex();
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail("Entry is not working properly when empty");
@@ -48,7 +48,7 @@ public class EntryTest {
                 "(source, news_url, category, media, tags, title, news_id, pub_date, content, summary, img) " +
                 "VALUES ('source','url','category','media','tag1,tag2','title','test1','2020-10-17','content','summary','image');");
         try {
-            Entry.initializeIndex();
+            initializer.initializeIndex();
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail("Entry is not working properly when not empty");
@@ -61,7 +61,7 @@ public class EntryTest {
                 "(source, news_url, category, media, tags, title, news_id, pub_date, content, summary, img) " +
                 "VALUES ('source','url','category','media','tag1,tag2','title','test2','2020-10-17','content','summary','image');");
         try {
-            Entry.initializeIndex();
+            initializer.initializeIndex();
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail("Entry is not working properly when not empty");
