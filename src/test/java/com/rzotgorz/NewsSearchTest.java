@@ -82,6 +82,30 @@ public class NewsSearchTest extends TestCase {
         } catch (Exception e) {
             fail("Invalid search results");
         }
+        get = MockMvcRequestBuilders.get("/index/search").param("query","title").param("count","1");
+        result = mockMvc.perform(get).andReturn();
+        status = result.getResponse().getStatus();
+        Assert.assertEquals("Invalid status code.",200,status);
+        object = JSONObject.parseObject(result.getResponse().getContentAsString());
+        Assert.assertEquals("Invalid response code.",200,object.getIntValue("code"));
+        try {
+            List<JSONObject> contents = JSON.parseArray(object.getJSONArray("infolist").toJSONString(),JSONObject.class);
+            Assert.assertEquals("Too many results!",1,contents.size());
+        } catch (Exception e) {
+            fail("Invalid search results");
+        }
+        get = MockMvcRequestBuilders.get("/index/search").param("query","title").param("start","20");
+        result = mockMvc.perform(get).andReturn();
+        status = result.getResponse().getStatus();
+        Assert.assertEquals("Invalid status code.",200,status);
+        object = JSONObject.parseObject(result.getResponse().getContentAsString());
+        Assert.assertEquals("Invalid response code.",200,object.getIntValue("code"));
+        try {
+            List<JSONObject> contents = JSON.parseArray(object.getJSONArray("infolist").toJSONString(),JSONObject.class);
+            Assert.assertEquals("Too many results!",0,contents.size());
+        } catch (Exception e) {
+            fail("Invalid search results");
+        }
         mockMvc.perform(del1).andReturn();
         mockMvc.perform(del2).andReturn();
     }

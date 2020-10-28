@@ -8,6 +8,7 @@ import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.store.Directory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -21,9 +22,15 @@ import java.sql.SQLException;
 @SpringBootApplication
 public class Entry
 {
+    private static DatabaseConnector connector;
+
+    @Autowired
+    public Entry(DatabaseConnector connector) {
+        Entry.connector = connector;
+    }
+
     public static void initializeIndex() throws SQLException, IOException {
         System.out.println("Index Initializing...");
-        DatabaseConnector connector = new DatabaseConnector();
         int cnt = 1000;
         Directory dir = LuceneConfig.directory();
         IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
@@ -33,7 +40,7 @@ public class Entry
         {
             String q = "SELECT * FROM backend_news WHERE id BETWEEN "+(cnt-1000)+" AND "+(cnt-1)+';';
             ResultSet resultSet = connector.query(q);
-            if(!resultSet.next())
+            if(resultSet == null || !resultSet.next())
                 break;
             do {
                 try {
@@ -64,11 +71,11 @@ public class Entry
         dir.close();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         try {
             initializeIndex();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         SpringApplication.run(Entry.class, args);
     }

@@ -7,7 +7,7 @@ WORKDIR $HOME
 COPY . $HOME
 RUN mvn -q -s settings.xml dependency:resolve
 
-RUN mvn -q -s settings.xml package -DskipTests
+RUN mvn -q -s settings.xml package -DskipTests -Dspring.profiles.active=prod
 
 EXPOSE 80
 

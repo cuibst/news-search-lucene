@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import static java.lang.Integer.min;
+
 @Controller
 @EnableAutoConfiguration
 @CrossOrigin(origins = "https://news-search-system-rzotgorz.app.secoder.net")
@@ -38,7 +40,7 @@ public class NewsSearchController {
      * Usage: Return the result of the given query.
      */
     @RequestMapping(value = "/index/search", method = RequestMethod.GET)
-    public void SearchNews(@RequestParam String query, HttpServletResponse response) throws Exception
+    public void SearchNews(@RequestParam("query") String query, @RequestParam(value="start", required = false) String start, @RequestParam(value="count", required = false) String count, HttpServletResponse response) throws Exception
     {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
@@ -47,9 +49,21 @@ public class NewsSearchController {
             writer.println("{\"code\":401,\"infolist\":\"invalid query\"}");
             return;
         }
-        ArrayList<NewsModel> hitsList = getTopDoc(query,10);
-        writer.println("{\"code\":200,\n\"infolist\":[");
-        for(int i=0;i<hitsList.size();i++)
+        int s;
+        if(start == null || start.equals(""))
+            s = 0;
+        else
+            s = Integer.parseInt(start);
+        int c;
+        if(count == null || count.equals(""))
+            c = 20;
+        else
+            c = Integer.parseInt(count);
+        ArrayList<NewsModel> hitsList = getTopDoc(query,min(s+c,1000));
+        writer.println("{\"code\":200,\n" +
+                "\"count\":" + hitsList.size() + ",\n" +
+                "\"infolist\":[\n");
+        for(int i=s;i<min(min(s+c,1000),hitsList.size());i++)
         {
             writer.print(hitsList.get(i).toJSONString());
             if(i!=hitsList.size()-1)
