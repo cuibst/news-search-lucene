@@ -47,6 +47,7 @@ public class AddNewsController {
         try {
             newsModel = NewsParser.parse(jsonParam);
         } catch (Exception e) { //If some of the parameters doesn't exist, the parser will throw a exception of cannot read parameters.
+            e.printStackTrace();
             printWriter.println("{\"code\":401,\"data\":\"Invalid News\"}");
             return;
         }
@@ -73,13 +74,15 @@ public class AddNewsController {
         }
         else
             flag = true;
-
+        if(dir != null)
+            dir.close();
+        IndexWriter writer = null;
         try {
             dir = LuceneConfig.directory();
             IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
             if(flag) //When the index doesn't exist, create it instead of add into it.
                 config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-            IndexWriter writer = new IndexWriter(dir, config);
+            writer = new IndexWriter(dir, config);
             Document document = new Document();
             FieldType fieldType = LuceneConfig.fieldType();
             document.add(new Field("title", newsModel.getTitle(), fieldType));
@@ -97,6 +100,11 @@ public class AddNewsController {
             writer.close();
             dir.close();
         } catch (Exception e) {
+            e.printStackTrace();
+            if(writer != null)
+                writer.close();
+            if(dir != null)
+                dir.close();
             printWriter.println("{\"code\":500,\"data\":\"Unknown error occurred\"}");
             return;
         }

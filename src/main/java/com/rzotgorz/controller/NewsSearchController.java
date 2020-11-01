@@ -3,6 +3,7 @@ package com.rzotgorz.controller;
 import com.rzotgorz.configuration.LuceneConfig;
 import com.rzotgorz.model.NewsModel;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -11,6 +12,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.highlight.*;
 import org.apache.lucene.store.Directory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
@@ -63,7 +65,7 @@ public class NewsSearchController {
         ArrayList<NewsModel> hitsList = getTopDoc(query,max(s+c,1000));
         writer.println("{\"code\":200,\n" +
                 "\"count\":" + hitsList.size() + ",\n" +
-                "\"infolist\":[\n");
+                "\"infolist\":[");
         for(int i=s;i<min(min(s+c,1000),hitsList.size());i++)
         {
             writer.print(hitsList.get(i).toJSONString());
@@ -90,15 +92,32 @@ public class NewsSearchController {
         Query query = parser.parse(key);
         TopDocs topDocs = searcher.search(query, N);
 
+        SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<span style=\"color:#F96600\">","</span>");
+        QueryScorer[] scorers = new QueryScorer[5];
+        Highlighter[] highlighters = new Highlighter[5];
+        for(int i=0;i<5;i++)
+        {
+            scorers[i] = new QueryScorer(query,fields[i]);
+            highlighters[i] = new Highlighter(formatter, scorers[i]);
+        }
+
         for(ScoreDoc scoreDoc: topDocs.scoreDocs) {
             NewsModel cur = new NewsModel();
             Document doc = searcher.doc(scoreDoc.doc);
+            String[] contents = new String[5];
+            String[] hlContents = new String[5];
+            for(int i=0;i<5;i++) {
+                contents[i] = doc.get(fields[i]);
+                Fragmenter fragmenter = new SimpleSpanFragmenter(scorers[i]);
+                highlighters[i].setTextFragmenter(fragmenter);
+                hlContents[i] = highlighters[i].getBestFragment(LuceneConfig.analyzer(), fields[i], contents[i]);
+            }
             cur.setId(doc.get("id"));
-            cur.setContents(doc.get("content"));
-            cur.setTags(doc.get("tags"));
-            cur.setTitle(doc.get("title"));
-            cur.setCategory(doc.get("category"));
-            cur.setSummary(doc.get("summary"));
+            cur.setContents(contents[2]);
+            cur.setTags(contents[1]);
+            cur.setTitle(hlContents[0] != null ? hlContents[0] : contents[0]);
+            cur.setCategory(contents[3]);
+            cur.setSummary(hlContents[2] != null ? hlContents[2] + "..." : contents[4]);
             cur.setSource(doc.get("source"));
             cur.setNews_url(doc.get("news_url"));
             cur.setMedia(doc.get("media"));

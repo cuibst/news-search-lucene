@@ -78,7 +78,7 @@ public class AddIdTest {
 
         connector.modify("INSERT INTO backend_news " +
                 "(source, news_url, category, media, tags, title, news_id, pub_date, content, summary, img) " +
-                "VALUES ('source','url','category','media','tag1,tag2','title','test1','2020-10-17','content','summary','image');");
+                "VALUES ('source','url','category','media','tag1,tag2','title','test1','2020-10-17','[''content'']','summary','image');");
         result = mockMvc.perform(post).andReturn();
         status = result.getResponse().getStatus();
         Assert.assertEquals("Invalid status code.",200,status);

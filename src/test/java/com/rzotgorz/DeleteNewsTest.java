@@ -57,7 +57,7 @@ public class DeleteNewsTest {
         Assert.assertEquals("Invalid response message","News doesn't exist",object.getString("data"));
         Map<String, Object> map = new HashMap<>();
         map.put("title", "title");
-        map.put("content", "Sample content");
+        map.put("content", "['Sample content']");
         map.put("category", "category");
         map.put("summary", "summary");
         map.put("tags", "tag1,tag2");
