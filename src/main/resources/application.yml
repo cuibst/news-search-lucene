@@ -22,3 +22,12 @@ spring:
     username: postgres
     password: 12345678
     url: "jdbc:postgresql://postgres.rzotgorz.secoder.local:5432/news"
+
+---
+spring:
+  profiles: devprod
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 12345678
+    url: "jdbc:postgresql://localhost:5432/news"
