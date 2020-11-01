@@ -92,7 +92,7 @@ public class NewsSearchController {
         Query query = parser.parse(key);
         TopDocs topDocs = searcher.search(query, N);
 
-        SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<font color='red'>","</font>");
+        SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<span style=\"color:#F96600\">","</span>");
         QueryScorer[] scorers = new QueryScorer[5];
         Highlighter[] highlighters = new Highlighter[5];
         for(int i=0;i<5;i++)
