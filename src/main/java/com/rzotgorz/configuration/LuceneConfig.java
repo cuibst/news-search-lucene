@@ -68,7 +68,6 @@ public class LuceneConfig {
     private static SearcherManager manager = null;
     private static final byte[] synchronized_r = new byte[0];
 
-    @Bean
     public static IndexSearcher getIndexSearcher() throws IOException {
         IndexSearcher indexSearcher = null;
         synchronized (synchronized_r) {
