@@ -42,7 +42,7 @@ public class NewsParserTest extends TestCase
     {
         Map<String, Object> map = new HashMap<>();
         map.put("title", "title");
-        map.put("content", "Sample content");
+        map.put("content", "['Sample content']");
         map.put("category", "category");
         map.put("summary", "summary");
         map.put("tags", "tag1,tag2");

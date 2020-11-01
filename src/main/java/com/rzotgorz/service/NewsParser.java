@@ -1,7 +1,11 @@
 package com.rzotgorz.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.rzotgorz.model.NewsModel;
+
+import java.util.List;
 
 public class NewsParser {
     /*
@@ -21,7 +25,12 @@ public class NewsParser {
         ret.setSource(jsonObject.getString("source"));
         ret.setSummary(jsonObject.getString("summary"));
         ret.setCategory(jsonObject.getString("category"));
-        ret.setContents(jsonObject.getString("content"));
+        List<String> stringList = JSONObject.parseArray(jsonObject.getString("content"), String.class);
+        StringBuilder builder = new StringBuilder();
+        for(String content: stringList) {
+            builder.append(content);
+        }
+        ret.setContents(builder.toString());
         return ret;
     }
 }
