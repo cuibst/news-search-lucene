@@ -3,6 +3,9 @@ package com.rzotgorz.configuration;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.SearcherFactory;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.context.annotation.Bean;
@@ -60,5 +63,27 @@ public class LuceneConfig {
         fieldType.setStoreTermVectorPositions(true);
         fieldType.setStoreTermVectorOffsets(true);
         return fieldType;
+    }
+
+    private static SearcherManager manager = null;
+    private static final byte[] synchronized_r = new byte[0];
+
+    @Bean
+    public static IndexSearcher getIndexSearcher() throws IOException {
+        IndexSearcher indexSearcher = null;
+        synchronized (synchronized_r) {
+            if(manager == null) {
+                manager = new SearcherManager(directory(), new SearcherFactory());
+            }
+            manager.maybeRefresh();
+            indexSearcher = manager.acquire();
+        }
+        return indexSearcher;
+    }
+
+    public static void closeIndexSearch(IndexSearcher indexSearcher) throws IOException {
+        if(indexSearcher!=null)
+            manager.release(indexSearcher);
+        indexSearcher = null;
     }
 }

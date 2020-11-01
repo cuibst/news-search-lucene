@@ -47,7 +47,6 @@ public class AddNewsController {
         try {
             newsModel = NewsParser.parse(jsonParam);
         } catch (Exception e) { //If some of the parameters doesn't exist, the parser will throw a exception of cannot read parameters.
-            e.printStackTrace();
             printWriter.println("{\"code\":401,\"data\":\"Invalid News\"}");
             return;
         }
@@ -100,7 +99,6 @@ public class AddNewsController {
             writer.close();
             dir.close();
         } catch (Exception e) {
-            e.printStackTrace();
             if(writer != null)
                 writer.close();
             if(dir != null)
