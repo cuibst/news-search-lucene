@@ -40,6 +40,7 @@ public class AddNewsController {
      * Method: POST
      * Usage: Receive the json of the news to be added and add it to the index (if it doesn't exist).
      */
+    @Deprecated
     @RequestMapping(value = "/index/add_from_json", method = RequestMethod.POST)
     public void addNewsFromJson(@RequestBody JSONObject jsonParam, HttpServletResponse response) throws IOException {
         PrintWriter printWriter = response.getWriter();
@@ -51,7 +52,6 @@ public class AddNewsController {
             return;
         }
         Directory dir = null;
-        boolean flag = false;
         if(LuceneConfig.directoryExist()) {
             try {
                 dir = LuceneConfig.directory();
@@ -65,22 +65,18 @@ public class AddNewsController {
                 if(topDocs.scoreDocs.length != 0)
                     throw new Exception("News Already Exists " + jsonParam.getString("news_id"));
             } catch (IndexNotFoundException e) { //Although the directory exists, it doesn't have the index. It's empty.
-                flag = true;
+                System.err.println(e.getMessage());
             } catch (Exception e) {  //Catch the exception of duplicate news.
                 printWriter.println("{\"code\":401,\"data\":\"" + e.getMessage() + "\"}");
                 return;
             }
         }
-        else
-            flag = true;
         if(dir != null)
             dir.close();
         IndexWriter writer = null;
         try {
             dir = LuceneConfig.directory();
             IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
-            if(flag) //When the index doesn't exist, create it instead of add into it.
-                config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
             writer = new IndexWriter(dir, config);
             Document document = new Document();
             FieldType fieldType = LuceneConfig.fieldType();
@@ -119,7 +115,6 @@ public class AddNewsController {
             return;
         }
         Directory dir = null;
-        boolean flag = false;
         if(LuceneConfig.directoryExist()) {
             try {
                 dir = LuceneConfig.directory();
@@ -133,19 +128,15 @@ public class AddNewsController {
                 if(topDocs.scoreDocs.length != 0)
                     throw new Exception("News Already Exists " + newsId);
             } catch (IndexNotFoundException e) { //Although the directory exists, it doesn't have the index. It's empty.
-                flag = true;
+                System.err.println(e.getMessage());
             } catch (Exception e) {  //Catch the exception of duplicate news.
                 printWriter.println("{\"code\":401,\"data\":\"" + e.getMessage() + "\"}");
                 return;
             }
         }
-        else
-            flag = true;
         try {
             dir = LuceneConfig.directory();
             IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
-            if(flag) //When the index doesn't exist, create it instead of add into it.
-                config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(dir, config);
             Document document = new Document();
             FieldType fieldType = LuceneConfig.fieldType();
