@@ -3,7 +3,6 @@ package com.rzotgorz.controller;
 import com.rzotgorz.configuration.LuceneConfig;
 import com.rzotgorz.model.NewsModel;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -62,11 +61,11 @@ public class NewsSearchController {
             c = 20;
         else
             c = Integer.parseInt(count);
-        ArrayList<NewsModel> hitsList = getTopDoc(query,max(s+c,1000));
+        ArrayList<NewsModel> hitsList = getTopDoc(query,max(s+c,100));
         writer.println("{\"code\":200,\n" +
                 "\"count\":" + hitsList.size() + ",\n" +
                 "\"infolist\":[");
-        for(int i=s;i<min(min(s+c,1000),hitsList.size());i++)
+        for(int i=s;i<min(min(s+c,100),hitsList.size());i++)
         {
             writer.print(hitsList.get(i).toJSONString());
             if(i!=hitsList.size()-1)
@@ -82,10 +81,7 @@ public class NewsSearchController {
     public static ArrayList<NewsModel> getTopDoc(String key,int N) throws Exception{
         ArrayList<NewsModel> hitsList = new ArrayList<>();
         String[] fields = {"title","tags","content","category","summary"};
-        Directory dir;
-        dir = LuceneConfig.directory();
-        IndexReader reader = DirectoryReader.open(dir);
-        IndexSearcher searcher = new IndexSearcher(reader);
+        IndexSearcher searcher = LuceneConfig.getIndexSearcher();
         Analyzer analyzer = LuceneConfig.analyzer();
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields,analyzer);
 
@@ -125,8 +121,7 @@ public class NewsSearchController {
             cur.setImg(doc.get("img"));
             hitsList.add(cur);
         }
-        dir.close();
-        reader.close();
+        LuceneConfig.closeIndexSearch(searcher);
         return hitsList;
     }
 }

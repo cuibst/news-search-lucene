@@ -43,6 +43,8 @@ public class Initializer implements ApplicationRunner {
         Directory dir = LuceneConfig.directory();
         IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        config.setMaxBufferedDocs(1000);
+        config.setRAMBufferSizeMB(256);
         IndexWriter writer = new IndexWriter(dir, config);
         while(true)
         {
