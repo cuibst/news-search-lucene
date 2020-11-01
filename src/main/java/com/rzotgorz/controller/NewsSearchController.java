@@ -65,7 +65,7 @@ public class NewsSearchController {
         ArrayList<NewsModel> hitsList = getTopDoc(query,max(s+c,1000));
         writer.println("{\"code\":200,\n" +
                 "\"count\":" + hitsList.size() + ",\n" +
-                "\"infolist\":[\n");
+                "\"infolist\":[");
         for(int i=s;i<min(min(s+c,1000),hitsList.size());i++)
         {
             writer.print(hitsList.get(i).toJSONString());
