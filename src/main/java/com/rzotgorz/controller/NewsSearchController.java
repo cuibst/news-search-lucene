@@ -108,10 +108,9 @@ public class NewsSearchController {
             String[] hlContents = new String[5];
             for(int i=0;i<5;i++) {
                 contents[i] = doc.get(fields[i]);
-                TokenStream tokenStream = TokenSources.getAnyTokenStream(searcher.getIndexReader(), scoreDoc.doc, fields[i], LuceneConfig.analyzer());
                 Fragmenter fragmenter = new SimpleSpanFragmenter(scorers[i]);
                 highlighters[i].setTextFragmenter(fragmenter);
-                hlContents[i] = highlighters[i].getBestFragment(tokenStream, contents[i]);
+                hlContents[i] = highlighters[i].getBestFragment(LuceneConfig.analyzer(), fields[i], contents[i]);
             }
             cur.setId(doc.get("id"));
             cur.setContents(contents[2]);
