@@ -134,10 +134,11 @@ public class AddNewsController {
                 return;
             }
         }
+        IndexWriter writer = null;
         try {
             dir = LuceneConfig.directory();
             IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
-            IndexWriter writer = new IndexWriter(dir, config);
+            writer = new IndexWriter(dir, config);
             Document document = new Document();
             FieldType fieldType = LuceneConfig.fieldType();
             ResultSet resultSet = connector.query("SELECT * FROM backend_news WHERE news_id = '"+newsId+"'");
@@ -164,6 +165,10 @@ public class AddNewsController {
             dir.close();
         } catch (Exception e) {
             printWriter.println("{\"code\":500,\"data\":\"Unknown error occurred"+e.getMessage()+"\"}");
+            if(writer != null)
+                writer.close();
+            if(dir != null)
+                dir.close();
             return;
         }
         printWriter.println("{\"code\":200,\"data\":\"News added successfully\"}");

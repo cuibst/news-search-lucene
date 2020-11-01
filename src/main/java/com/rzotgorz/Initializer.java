@@ -70,6 +70,8 @@ public class Initializer implements ApplicationRunner {
                     writer.addDocument(document);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    writer.close();
+                    dir.close();
                     return;
                 }
             } while(resultSet.next());
