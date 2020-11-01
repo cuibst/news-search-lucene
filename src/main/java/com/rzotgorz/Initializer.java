@@ -69,6 +69,7 @@ public class Initializer implements ApplicationRunner {
                     document.add(new StringField("img", resultSet.getString("img"), Field.Store.YES));
                     writer.addDocument(document);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     return;
                 }
             } while(resultSet.next());
@@ -86,7 +87,7 @@ public class Initializer implements ApplicationRunner {
         try {
             initializeIndex();
         } catch (IOException | SQLException e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 }
