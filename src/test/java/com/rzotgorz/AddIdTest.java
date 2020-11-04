@@ -32,14 +32,23 @@ public class AddIdTest {
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
+    private DatabaseConnector connector;
+
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        connector.modify("DROP TABLE IF EXISTS backend_news;");
+        connector.modify("CREATE TABLE backend_news" +
+                "(id INTEGER PRIMARY KEY AUTOINCREMENT, source STRING NOT NULL, news_url STRING NOT NULL, category STRING NOT NULL, " +
+                "media STRING NOT NULL, tags STRING NOT NULL, title STRING NOT NULL, news_id STRING NOT NULL UNIQUE, " +
+                "pub_date STRING NOT NULL, content STRING NOT NULL, summary STRING NOT NULL, img STRING NOT NULL)");
     }
 
     @Test
     public void testAddInvalidId() throws Exception{
-        MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post("/index/add/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{}");
+        MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post("/index/add_from_id/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{}");
+        MockHttpServletRequestBuilder postSeries = MockMvcRequestBuilders.post("/index/add/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{}");
         MvcResult result = mockMvc.perform(post).andReturn();
         int status = result.getResponse().getStatus();
         Assert.assertEquals("Invalid status code.",200,status);
@@ -47,7 +56,14 @@ public class AddIdTest {
         Assert.assertEquals("Invalid response code.",401,object.getIntValue("code"));
         Assert.assertEquals("Invalid response message","Invalid news id",object.getString("data"));
 
-        post = MockMvcRequestBuilders.post("/index/add/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"news_id\":\"\"}");
+        result = mockMvc.perform(postSeries).andReturn();
+        status = result.getResponse().getStatus();
+        Assert.assertEquals("Invalid status code.",200,status);
+        object = JSONObject.parseObject(result.getResponse().getContentAsString());
+        Assert.assertEquals("Invalid response code.",401,object.getIntValue("code"));
+        Assert.assertEquals("Invalid response message","Invalid id list",object.getString("data"));
+
+        post = MockMvcRequestBuilders.post("/index/add_from_id/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"news_id\":\"\"}");
         result = mockMvc.perform(post).andReturn();
         status = result.getResponse().getStatus();
         Assert.assertEquals("Invalid status code.",200,status);
@@ -58,10 +74,10 @@ public class AddIdTest {
 
     @Test
     public void testAddValidId() throws Exception {
-        DatabaseConnector connector = new DatabaseConnector();
         connector.modify("DELETE FROM backend_news WHERE news_id = 'test1';");
 
-        MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post("/index/add/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"news_id\":\"test1\"}");
+        MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post("/index/add_from_id/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"news_id\":\"test1\"}");
+        MockHttpServletRequestBuilder postSeries = MockMvcRequestBuilders.post("/index/add/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"news_id\":[\"test1\"]}");
         MvcResult result = mockMvc.perform(post).andReturn();
         int status = result.getResponse().getStatus();
         Assert.assertEquals("Invalid status code.",200,status);
@@ -69,15 +85,34 @@ public class AddIdTest {
         Assert.assertEquals("Invalid response code.",401,object.getIntValue("code"));
         Assert.assertEquals("Invalid response message","No news found with given id",object.getString("data"));
 
+        result = mockMvc.perform(postSeries).andReturn();
+        status = result.getResponse().getStatus();
+        Assert.assertEquals("Invalid status code.",200,status);
+        object = JSONObject.parseObject(result.getResponse().getContentAsString());
+        Assert.assertEquals("Invalid response code.",200,object.getIntValue("code"));
+        Assert.assertEquals("Invalid response message","Process finished.",object.getString("data"));
+
         connector.modify("INSERT INTO backend_news " +
                 "(source, news_url, category, media, tags, title, news_id, pub_date, content, summary, img) " +
-                "VALUES ('source','url','category','media','tag1,tag2','title','test1','2020-10-17','content','summary','image');");
+                "VALUES ('source','url','category','media','tag1,tag2','title','test1','2020-10-17','[''content'']','summary','image');");
         result = mockMvc.perform(post).andReturn();
         status = result.getResponse().getStatus();
         Assert.assertEquals("Invalid status code.",200,status);
         object = JSONObject.parseObject(result.getResponse().getContentAsString());
         Assert.assertEquals("Invalid response code.",200,object.getIntValue("code"));
         Assert.assertEquals("Invalid response message","News added successfully",object.getString("data"));
+
+        connector.modify("INSERT INTO backend_news " +
+                "(source, news_url, category, media, tags, title, news_id, pub_date, content, summary, img) " +
+                "VALUES ('source','url','category','media','tag1,tag2','title','test2','2020-10-17','[''content'']','summary','image');");
+        postSeries = MockMvcRequestBuilders.post("/index/add/").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"news_id\":[\"test1\",\"test2\"" +
+                "]}");
+        result = mockMvc.perform(postSeries).andReturn();
+        status = result.getResponse().getStatus();
+        Assert.assertEquals("Invalid status code.",200,status);
+        object = JSONObject.parseObject(result.getResponse().getContentAsString());
+        Assert.assertEquals("Invalid response code.",200,object.getIntValue("code"));
+        Assert.assertEquals("Invalid response message","Process finished.",object.getString("data"));
 
         result = mockMvc.perform(post).andReturn();
         status = result.getResponse().getStatus();
@@ -89,6 +124,9 @@ public class AddIdTest {
         MockHttpServletRequestBuilder del = MockMvcRequestBuilders.post("/index/delete").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"id\":\"test1\"}");
         mockMvc.perform(del).andReturn();
 
-        connector.modify("DELETE FROM backend_news WHERE news_id = 'test1';");
+        del = MockMvcRequestBuilders.post("/index/delete").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"id\":\"test2\"}");
+        mockMvc.perform(del).andReturn();
+
+        connector.modify("DELETE FROM backend_news WHERE news_id in ('test1','test2');");
     }
 }

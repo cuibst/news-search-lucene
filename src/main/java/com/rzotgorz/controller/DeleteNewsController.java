@@ -33,7 +33,7 @@ public class DeleteNewsController {
         PrintWriter printWriter = response.getWriter();
         String id = jsonParam.getString("id");
         if(id == null || id.equals("")) { //Incorrect id, solve it ahead of deletion (to prevent delete all the indices).
-            printWriter.println("{code:401,data:\"Invalid news id\"}");
+            printWriter.println("{\"code\":401,\"data\":\"Invalid news id\"}");
             return;
         }
         Directory dir = null;
@@ -55,13 +55,13 @@ public class DeleteNewsController {
         else
             flag = false;
         if (!flag) {
-            printWriter.println("{code:401,data:\"News doesn't exist\"}");
+            printWriter.println("{\"code\":401,\"data\":\"News doesn't exist\"}");
             return;
         }
         IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
         IndexWriter writer = new IndexWriter(LuceneConfig.directory(),config);
         writer.deleteDocuments(new Term("id",id)); //The id is unique, so delete without checking.
         writer.close();
-        printWriter.println("{code:200,data:\"News deleted successfully\"}");
+        printWriter.println("{\"code\":200,\"data\":\"News deleted successfully\"}");
     }
 }

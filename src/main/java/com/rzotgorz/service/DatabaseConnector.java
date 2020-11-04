@@ -1,21 +1,26 @@
 package com.rzotgorz.service;
 
+import com.rzotgorz.configuration.DatabaseConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.*;
 
+@Service
 public class DatabaseConnector {
     // private static final String url = "jdbc:postgresql://localhost:5432/news";
-    private static final String url = "jdbc:postgresql://postgres.rzotgorz.secoder.local:5432/news";
-    private static final String username = "postgres";
-    private static final String password = "12345678";
+
+    @Autowired
+    private DatabaseConfig config;
+
     private Connection connection = null;
+
     private void getConnection() {
         try {
-            Class.forName("org.postgresql.Driver").newInstance();
-            connection = DriverManager.getConnection(url, username, password);
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            connection = DriverManager.getConnection(config.url, config.username, config.password);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
         }
-
     }
 
     public ResultSet query(String q) {
@@ -23,8 +28,10 @@ public class DatabaseConnector {
             getConnection();
         }
         ResultSet resultSet = null;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(q);) {
-            resultSet = preparedStatement.executeQuery();
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(q);
         } catch (SQLException e) {
             return null;
         }
@@ -36,8 +43,8 @@ public class DatabaseConnector {
             getConnection();
         }
         int result = 0;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(q);) {
-            result = preparedStatement.executeUpdate();
+        try (Statement statement = connection.createStatement();) {
+            result = statement.executeUpdate(q);
         } catch (SQLException e) {
             return false;
         }

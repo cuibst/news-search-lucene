@@ -11,4 +11,4 @@ RUN mvn -q -s settings.xml package -DskipTests
 
 EXPOSE 80
 
-CMD java -jar target/news-search-lucene.jar
+CMD java -jar target/news-search-lucene.jar --spring.profiles.active=prod
