@@ -206,6 +206,7 @@ public class AddNewsController {
         }
         closeWriter();
         printWriter.println("{\"code\":200,\"data\":\"Process finished.\"}");
+        System.err.println("Successfully add "+String.valueOf(addList.size())+" of "+String.valueOf(idList.size())+" news.");
     }
 
     private void addNewsToIndex(NewsModel newsModel) throws Exception{
