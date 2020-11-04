@@ -3,6 +3,7 @@ package com.rzotgorz;
 import com.rzotgorz.configuration.DatabaseConfig;
 import com.rzotgorz.configuration.LuceneConfig;
 import com.rzotgorz.service.DatabaseConnector;
+import com.rzotgorz.service.NewsParser;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
@@ -57,7 +58,7 @@ public class Initializer implements ApplicationRunner {
                     Document document = new Document();
                     FieldType fieldType = LuceneConfig.fieldType();
                     document.add(new Field("title", resultSet.getString("title"), fieldType));
-                    document.add(new Field("content", resultSet.getString("content"), fieldType));
+                    document.add(new Field("content", NewsParser.parseContent(resultSet.getString("content")), fieldType));
                     document.add(new Field("category", resultSet.getString("category"), fieldType));
                     document.add(new Field("summary", resultSet.getString("summary"), fieldType));
                     document.add(new Field("tags", resultSet.getString("tags"), fieldType));
