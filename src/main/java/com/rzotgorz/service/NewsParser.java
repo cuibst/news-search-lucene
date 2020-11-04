@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.rzotgorz.model.NewsModel;
 
+import java.io.IOException;
 import java.util.List;
 
 public class NewsParser {
@@ -32,5 +33,14 @@ public class NewsParser {
         }
         ret.setContents(builder.toString());
         return ret;
+    }
+
+    public static String parseContent(String original) {
+        StringBuilder builder = new StringBuilder();
+        List<String> stringList = JSONObject.parseArray(original, String.class);
+        for(String content: stringList) {
+            builder.append(content);
+        }
+        return builder.toString();
     }
 }
