@@ -75,6 +75,7 @@ public class NewsSearchTest extends TestCase {
         int status = result.getResponse().getStatus();
         Assert.assertEquals("Invalid status code.",200,status);
         JSONObject object = JSONObject.parseObject(result.getResponse().getContentAsString());
+        System.out.println(object.toString());
         Assert.assertEquals("Invalid response code.",200,object.getIntValue("code"));
         try {
             List<JSONObject> contents = JSON.parseArray(object.getJSONArray("infolist").toJSONString(),JSONObject.class);

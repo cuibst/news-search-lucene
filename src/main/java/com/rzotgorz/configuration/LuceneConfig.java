@@ -3,6 +3,7 @@ package com.rzotgorz.configuration;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
@@ -77,5 +78,12 @@ public class LuceneConfig {
         if(indexSearcher!=null)
             manager.release(indexSearcher);
         indexSearcher = null;
+    }
+
+    public static IndexWriterConfig getWriterConfig() {
+        IndexWriterConfig config = new IndexWriterConfig(LuceneConfig.analyzer());
+        config.setMaxBufferedDocs(1000);
+        config.setRAMBufferSizeMB(256);
+        return config;
     }
 }

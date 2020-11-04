@@ -4,15 +4,12 @@ import com.rzotgorz.configuration.LuceneConfig;
 import com.rzotgorz.model.NewsModel;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.*;
-import org.apache.lucene.store.Directory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -65,7 +62,7 @@ public class NewsSearchController {
         writer.println("{\"code\":200,\n" +
                 "\"count\":" + hitsList.size() + ",\n" +
                 "\"infolist\":[");
-        for(int i=s;i<min(min(s+c,100),hitsList.size());i++)
+        for(int i=s;i<min(s+c, hitsList.size());i++)
         {
             writer.print(hitsList.get(i).toJSONString());
             if(i!=hitsList.size()-1)
@@ -80,7 +77,8 @@ public class NewsSearchController {
      */
     public static ArrayList<NewsModel> getTopDoc(String key,int N) throws Exception{
         ArrayList<NewsModel> hitsList = new ArrayList<>();
-        String[] fields = {"title","tags","content","category","summary"};
+        String[] fields = {"title","content"};
+        final int fieldCount = 2;
         IndexSearcher searcher = LuceneConfig.getIndexSearcher();
         Analyzer analyzer = LuceneConfig.analyzer();
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields,analyzer);
@@ -91,7 +89,7 @@ public class NewsSearchController {
         SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<span style=\"color:#F96600\">","</span>");
         QueryScorer[] scorers = new QueryScorer[5];
         Highlighter[] highlighters = new Highlighter[5];
-        for(int i=0;i<5;i++)
+        for(int i=0;i<fieldCount;i++)
         {
             scorers[i] = new QueryScorer(query,fields[i]);
             highlighters[i] = new Highlighter(formatter, scorers[i]);
@@ -100,20 +98,20 @@ public class NewsSearchController {
         for(ScoreDoc scoreDoc: topDocs.scoreDocs) {
             NewsModel cur = new NewsModel();
             Document doc = searcher.doc(scoreDoc.doc);
-            String[] contents = new String[5];
-            String[] hlContents = new String[5];
-            for(int i=0;i<5;i++) {
+            String[] contents = new String[fieldCount];
+            String[] hlContents = new String[fieldCount];
+            for(int i=0;i<fieldCount;i++) {
                 contents[i] = doc.get(fields[i]);
                 Fragmenter fragmenter = new SimpleSpanFragmenter(scorers[i]);
                 highlighters[i].setTextFragmenter(fragmenter);
                 hlContents[i] = highlighters[i].getBestFragment(LuceneConfig.analyzer(), fields[i], contents[i]);
             }
             cur.setId(doc.get("id"));
-            cur.setContents(contents[2]);
-            cur.setTags(contents[1]);
+            cur.setContents("");
+            cur.setTags(doc.get("tags"));
             cur.setTitle(hlContents[0] != null ? hlContents[0] : contents[0]);
-            cur.setCategory(contents[3]);
-            cur.setSummary(hlContents[2] != null ? hlContents[2] + "..." : contents[4]);
+            cur.setCategory(doc.get("category"));
+            cur.setSummary(hlContents[1] != null ? "..." + hlContents[1] + "..." : doc.get("summary"));
             cur.setSource(doc.get("source"));
             cur.setNews_url(doc.get("news_url"));
             cur.setMedia(doc.get("media"));
