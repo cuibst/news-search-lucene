@@ -2,6 +2,7 @@ package com.rzotgorz.configuration;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.IndexNotFoundException;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
@@ -66,7 +67,13 @@ public class LuceneConfig {
         IndexSearcher indexSearcher = null;
         synchronized (synchronized_r) {
             if(manager == null) {
-                manager = new SearcherManager(directory(), new SearcherFactory());
+                try {
+                    manager = new SearcherManager(directory(), new SearcherFactory());
+                } catch (IndexNotFoundException e) {
+                    System.err.println(e.getMessage());
+                    manager = null;
+                    return null;
+                }
             }
             manager.maybeRefresh();
             indexSearcher = manager.acquire();

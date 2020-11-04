@@ -82,12 +82,14 @@ public class AddNewsController {
         if(LuceneConfig.directoryExist()) {
             try {
                 searcher = LuceneConfig.getIndexSearcher();
-                //Use term because the id didn't go through analyzer when added.
-                Query query = new TermQuery(new Term("id",jsonParam.getString("news_id")));
-                TopDocs topDocs = searcher.search(query, 10);
-                if(topDocs.scoreDocs.length != 0)
-                    throw new Exception("News Already Exists " + jsonParam.getString("news_id"));
-                LuceneConfig.closeIndexSearch(searcher);
+                if(searcher != null) {
+                    //Use term because the id didn't go through analyzer when added.
+                    Query query = new TermQuery(new Term("id", jsonParam.getString("news_id")));
+                    TopDocs topDocs = searcher.search(query, 10);
+                    if (topDocs.scoreDocs.length != 0)
+                        throw new Exception("News Already Exists " + jsonParam.getString("news_id"));
+                    LuceneConfig.closeIndexSearch(searcher);
+                }
             } catch (IndexNotFoundException e) { //Although the directory exists, it doesn't have the index. It's empty.
                 System.err.println(e.getMessage());
             } catch (Exception e) {  //Catch the exception of duplicate news.
@@ -120,12 +122,14 @@ public class AddNewsController {
         if(LuceneConfig.directoryExist()) {
             try {
                 searcher = LuceneConfig.getIndexSearcher();
-                //Use term because the id didn't go through analyzer when added.
-                Query query = new TermQuery(new Term("id", newsId));
-                TopDocs topDocs = searcher.search(query, 10);
-                if(topDocs.scoreDocs.length != 0)
-                    throw new Exception("News Already Exists " + newsId);
-                LuceneConfig.closeIndexSearch(searcher);
+                if(searcher != null) {
+                    //Use term because the id didn't go through analyzer when added.
+                    Query query = new TermQuery(new Term("id", newsId));
+                    TopDocs topDocs = searcher.search(query, 10);
+                    if (topDocs.scoreDocs.length != 0)
+                        throw new Exception("News Already Exists " + newsId);
+                    LuceneConfig.closeIndexSearch(searcher);
+                }
             } catch (IndexNotFoundException e) { //Although the directory exists, it doesn't have the index. It's empty.
                 System.err.println(e.getMessage());
             } catch (Exception e) {  //Catch the exception of duplicate news.
@@ -165,13 +169,16 @@ public class AddNewsController {
         if(LuceneConfig.directoryExist())
         {
             IndexSearcher searcher = LuceneConfig.getIndexSearcher();
-            boolean flag = false;
-            for(String newsId: idList) {
-                Query query = new TermQuery(new Term("id", newsId));
-                TopDocs topDocs = searcher.search(query, 10);
-                if (topDocs.scoreDocs.length != 0)
-                    continue;
-                addList.add(newsId);
+            if(searcher == null)
+                addList = idList;
+            else {
+                for (String newsId : idList) {
+                    Query query = new TermQuery(new Term("id", newsId));
+                    TopDocs topDocs = searcher.search(query, 10);
+                    if (topDocs.scoreDocs.length != 0)
+                        continue;
+                    addList.add(newsId);
+                }
             }
         } else {
             addList = idList;
